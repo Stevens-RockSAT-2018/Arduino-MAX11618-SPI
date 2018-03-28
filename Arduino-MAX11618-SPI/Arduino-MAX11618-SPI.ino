@@ -15,7 +15,11 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(readChannel0());
+  //Serial.println(readChannel0());
+  unsigned int ch0and1 = readChannel0and1();
+  Serial.print(ch0and1 >> 16);
+  Serial.print(" ");
+  Serial.println(ch0and1 & 0x03FF); //least sig 10 bits
   delay(5);
 }
 
