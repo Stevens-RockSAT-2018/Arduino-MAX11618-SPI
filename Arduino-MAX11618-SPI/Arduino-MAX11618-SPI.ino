@@ -44,9 +44,9 @@ unsigned int readChannel0and1()
   byte lsb = SPI.transfer(0x00);
   data = (msb<<6 | lsb>>2)<<16;
   
-  byte msb = SPI.transfer(0x00);
+  msb = SPI.transfer(0x00);
   delayMicroseconds(20);
-  byte lsb = SPI.transfer(0x00);
+  lsb = SPI.transfer(0x00);
   data |= (msb<<6 | lsb>>2);
   delayMicroseconds(20);
   digitalWrite(CS_PIN, HIGH);
