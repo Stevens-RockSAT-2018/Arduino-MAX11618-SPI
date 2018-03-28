@@ -30,6 +30,26 @@ unsigned int readChannel0()
   return (msb<<6 | lsb>>2);
 }
 
+unsigned int readChannel0and1()
+{
+  unsigned int data;
+  byte regData = SETUP_FLAG | 1 << 3 | SCAN_MODE_0_N;
+  digitalWrite(CS_PIN, LOW);
+  byte msb = SPI.transfer(regData);
+  delayMicroseconds(20);
+  byte lsb = SPI.transfer(0x00);
+  data = (msb<<6 | lsb>>2)<<16;
+  
+  byte msb = SPI.transfer(0x00);
+  delayMicroseconds(20);
+  byte lsb = SPI.transfer(0x00);
+  data |= (msb<<6 | lsb>>2);
+  delayMicroseconds(20);
+  digitalWrite(CS_PIN, HIGH);
+  
+  return (msb<<6 | lsb>>2);
+}
+
 unsigned int readMode(byte channel, byte scanMode)
 {
   byte regData = SETUP_FLAG | channel << 3 | scanMode;
