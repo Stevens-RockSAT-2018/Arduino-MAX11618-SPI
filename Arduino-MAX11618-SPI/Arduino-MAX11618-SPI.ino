@@ -1,10 +1,10 @@
 #include <SPI.h>
 #define CS_PIN 2
 
-#define SETUP_FLAG     10000000
-#define SCAN_MODE_NONE 00000110
-#define SCAN_MODE_0_N  00000000
-#define SCAN_MODE_N_4  00000100
+#define SETUP_FLAG     B10000000
+#define SCAN_MODE_NONE B00000110
+#define SCAN_MODE_0_N  B00000000
+#define SCAN_MODE_N_4  B00000100
 
 void setup() {
   pinMode(CS_PIN, OUTPUT);
@@ -16,11 +16,11 @@ void setup() {
 
 void loop() {
   //Serial.println(readChannel0());
-  unsigned int ch0and1 = readChannel0and1();
+  uint32_t ch0and1 = readChannel0and1();
   Serial.print(ch0and1 >> 16);
   Serial.print(" ");
   Serial.println(ch0and1 & 0x03FF); //least sig 10 bits
-  delay(5);
+  delay(25);
 }
 
 unsigned int readChannel0()
@@ -34,15 +34,17 @@ unsigned int readChannel0()
   return (msb<<6 | lsb>>2);
 }
 
-unsigned int readChannel0and1()
+uint32_t readChannel0and1()
 {
-  unsigned int data;
-  byte regData = SETUP_FLAG | 1 << 3 | SCAN_MODE_0_N;
+  uint32_t data;
+  uint16_t regData = SETUP_FLAG | 1 << 3 | SCAN_MODE_0_N;
   digitalWrite(CS_PIN, LOW);
-  byte msb = SPI.transfer(regData);
   delayMicroseconds(20);
-  byte lsb = SPI.transfer(0x00);
-  data = (msb<<6 | lsb>>2)<<16;
+  uint16_t msb = SPI.transfer(regData);
+  delayMicroseconds(20);
+  uint16_t lsb = SPI.transfer(0x00);
+  data = (msb<<6 | lsb>>2);
+  data <<= 16;
   
   msb = SPI.transfer(0x00);
   delayMicroseconds(20);
@@ -51,7 +53,7 @@ unsigned int readChannel0and1()
   delayMicroseconds(20);
   digitalWrite(CS_PIN, HIGH);
   
-  return (msb<<6 | lsb>>2);
+  return data;
 }
 
 unsigned int readMode(byte channel, byte scanMode)
